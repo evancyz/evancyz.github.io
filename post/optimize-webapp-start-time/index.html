@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解 - 小之的技术博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="小之" /><meta name="description" content="某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.1 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/optimize-webapp-start-time/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解" />
+<meta property="og:description" content="某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/optimize-webapp-start-time/" />
+<meta property="article:published_time" content="2019-07-08T12:24:41+08:00" />
+<meta property="article:modified_time" content="2019-07-08T12:24:41+08:00" />
+<meta itemprop="name" content="务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解">
+<meta itemprop="description" content="某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。">
+
+
+<meta itemprop="datePublished" content="2019-07-08T12:24:41&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-08T12:24:41&#43;08:00" />
+<meta itemprop="wordCount" content="2016">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解"/>
+<meta name="twitter:description" content="某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">小之</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">小之</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-08 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#引子">引子</a></li>
+<li><a href="#来了-老弟">来了，老弟</a>
+<ul>
+<li><a href="#将日志级别调至-code-debug-code-级别">将日志级别调至<code>Debug</code>级别</a></li>
+<li><a href="#坑来了-如何对bean进行懒加载">坑来了：如何对Bean进行懒加载？</a></li>
+<li><a href="#继续优化-mock一些毒瘤依赖">继续优化，Mock一些毒瘤依赖</a></li>
+<li><a href="#精益求精-搜寻日志-发现异常类加载超过10s-来魔改">精益求精，搜寻日志，发现异常类加载超过10s，来魔改</a></li>
+</ul></li>
+<li><a href="#总结一把">总结一把</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="引子">引子</h1>
+
+<p>某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。</p>
+
+<p>我默不作声，因为主项目还没有完全服务化，主项目的整体<code>war</code>包太大，加上从来没有讲究过，开发同学跑一个测试用例，往往启动<code>Spring</code>就要花一分半钟，哪里有心情按规范跑单测呢？同问了几个开发同学也都有同样的痛点，感觉解决单测环境刻不容缓，古人云：工欲善其事，必先利其器，对吧？</p>
+
+<h1 id="来了-老弟">来了，老弟</h1>
+
+<h2 id="将日志级别调至-code-debug-code-级别">将日志级别调至<code>Debug</code>级别</h2>
+
+<p>没错，这是我们需要做的第一步最重要的步骤，开启单测，把日志打到一个文件里，从头撸到尾，究竟你这加载的一分半钟究竟干嘛了~</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">一些Spring配置初始化
+根据ComponentScan扫路径的Class类，加入待注入候选列表
+根据Mapper扫路径的Class类，加入待注入候选列表
+对扫出来的Mapper创建MapperFactoryBean
+创建注入@Configuration里@Bean注解的Bean的BeanDefinitions
+预加载一些Bean
+一些组件例如，PostProcessor、Advisor初始化
+一些中间件例如数据库、缓存、消息队列加载
+扫描的Bean的初始化，依赖注入。。
+Bean的PostConstruct开始跑
+....//可能不是很全，列举了其中一部分</pre></td></tr></table>
+</div>
+</div>
+<p><img src="https://user-gold-cdn.xitu.io/2019/7/8/16bd21d265779be3?w=1550&amp;h=312&amp;f=png&amp;s=65922" alt="" />
+默默的看了眼日志，20M，妈耶，引了一个<code>ApplicationContextAware</code>看了一下<code>BeanFactory</code>，好吧，加载了1500个<code>Bean</code>，<code>Spring</code>默认的Ioc容器会把所有的Bean在启动时，都加载成功，首先想到的措施是让<strong>Bean</strong>懒加载，按需加载，不用的就不加载嘛，很简单！</p>
+
+<h2 id="坑来了-如何对bean进行懒加载">坑来了：如何对Bean进行懒加载？</h2>
+
+<p>简单的网上冲浪了一下，我们需要将</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">注解法</span><span class="err">：</span><span class="nd">@ComponentScan</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;com.evanyz&#34;</span><span class="p">,</span><span class="n">lazyInit</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span> <span class="c1">//将这个配置设为true
+</span><span class="c1"></span><span class="o">//</span><span class="n">xml里是beans里有一个default</span><span class="o">-</span><span class="n">lazy</span><span class="o">-</span><span class="n">init标签</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>可是设置成功之后，完全不生效，还是1500个，尝试许久，还是没生效，感觉很懵逼，甚至都有点开始怀疑<code>Spring</code>了。</p>
+
+<p>排查许久后，突然发现为什么<code>Debug</code>的时候，会报一些该Bean重复已存在忽略的错，突然灵光一现。
+MD，我们项目里写代码根本不讲究，每一个子项目里，例如<code>common</code>、<code>biz</code> 都含有<code>Spring</code>的初始化文件。</p>
+
+<p>也就是说，从这个初始化配置之后，继续扫其他的配置文件，还是会继续加载，导致之前的配置失效。。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">举例:
+我在test的初始化类里配置了 @ComponentScan(value = &#34;com.evanyz&#34;,lazyInit = true) ,
+当他扫到biz子项目的时候，发现另外一个Spring的配置文件是
+@ComponentScan(value = &#34;com.evanyz&#34;)
+这时候懒加载会被覆盖掉，就不生效了。。</pre></td></tr></table>
+</div>
+</div>
+<p>这时候想到的办法就是 在test配置里加上一些操作，解释见注解</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@ComponentScan</span><span class="p">(</span>
+    <span class="c1">//扫包
+</span><span class="c1"></span>    <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="n">com</span><span class="p">.</span><span class="na">evanyz</span><span class="s">&#34;},
+</span><span class="s">   //排除一些Bean
+</span><span class="s">    excludeFilters = {
+</span><span class="s">        //做点小优化，让他把一些在跑单测时的扩展点不要注入
+</span><span class="s">        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {
+</span><span class="s">            SmsServicePostProcessor.class, CatUrlPostProcessor.class,
+</span><span class="s">        }),
+</span><span class="s">        //按政策排除，把一些其他项目里的Spring配置去掉
+</span><span class="s">        @ComponentScan.Filter(type = FilterType.REGEX, pattern = {
+</span><span class="s">            &#34;</span><span class="n">com</span><span class="err">\\</span><span class="p">.</span><span class="na">evanyz</span><span class="err">\\</span><span class="p">.</span><span class="na">test</span><span class="err">\\</span><span class="p">..</span><span class="o">*</span><span class="s">&#34;,
+</span><span class="s">            &#34;</span><span class="n">com</span><span class="err">\\</span><span class="p">.</span><span class="na">evanyz</span><span class="err">\\</span><span class="p">.</span><span class="na">biz</span><span class="err">\\</span><span class="p">.</span><span class="na">springconfig</span><span class="p">..</span><span class="o">*</span><span class="s">&#34;,
+</span><span class="s">            &#34;</span><span class="n">com</span><span class="err">\\</span><span class="p">.</span><span class="na">evanyz</span><span class="err">\\</span><span class="p">.</span><span class="na">common</span><span class="err">\\</span><span class="p">.</span><span class="na">springconfig</span><span class="p">..</span><span class="o">*</span><span class="s">&#34;,
+</span><span class="s">            &#34;</span><span class="n">com</span><span class="err">\\</span><span class="p">.</span><span class="na">evanyz</span><span class="err">\\</span><span class="p">.</span><span class="na">common</span><span class="err">\\</span><span class="p">.</span><span class="na">cat</span><span class="p">..</span><span class="o">*</span><span class="err">&#34;</span>
+        <span class="p">}),</span>
+        <span class="c1">//最后清掉了发现，还是有一些配置被加载了
+</span><span class="c1"></span>        <span class="c1">//一不做二不休，我全干掉，搞白名单还不行吗？哭哭
+</span><span class="c1"></span>        <span class="nd">@ComponentScan.Filter</span><span class="p">(</span><span class="n">type</span> <span class="o">=</span> <span class="n">FilterType</span><span class="p">.</span><span class="na">ANNOTATION</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ComponentScan</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">Configuration</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">ImportResource</span><span class="p">.</span><span class="na">class</span>
+        <span class="p">}),</span>
+    <span class="p">},</span> <span class="n">lazyInit</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>经过以上的一顿操作，Spring终于懒加载了，直观的看一下之后的<code>Debug</code>，瘦身了3倍，爽！
+<img src="https://user-gold-cdn.xitu.io/2019/7/8/16bd235b078641a6?w=1600&amp;h=344&amp;f=png&amp;s=57716" alt="" /></p>
+
+<h2 id="继续优化-mock一些毒瘤依赖">继续优化，Mock一些毒瘤依赖</h2>
+
+<p>虽然<code>Spring</code>已懒加载，但是依赖很乱，往往依赖一个服务，又要注入很多的类，而且很多的业务的类，都写了<code>@PostConstruct</code>，如果里面包含业务代码，例如查库啊之类的，你就呵呵吧。一次Spring启动能给你跑100条Sql，能不慢吗？</p>
+
+<p>来，壮士断腕，把这些毒瘤，会预先加载的类，选一些不重要的在单测不需要用的都做个Mock，不要让这个拖垮我们的环境！</p>
+
+<h2 id="精益求精-搜寻日志-发现异常类加载超过10s-来魔改">精益求精，搜寻日志，发现异常类加载超过10s，来魔改</h2>
+
+<p>这时候，其实一次单测已经在30s就可以搞定了，但是本着有点追求的想法，还是想再优化一下。</p>
+
+<p>突然发现有一个可疑的日志</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/7/8/16bd23d2b5ebc63b?w=2508&amp;h=368&amp;f=png&amp;s=1432757" alt="" /></p>
+
+<p>我们用的<code>Cat</code>做监控，我们项目里有很多<code>Cat</code>打点的工具类，只要跑到一个打点上，Cat就会开始加载（明明连不上），但是这一步骤估计是<code>IO</code>之类的东西，加载一下居然花了10几秒，我的天，肯定要干掉！</p>
+
+<p>怎么干呢？因为这些打点是耦合在代码里的，不好动，这时候想到的解决方案就是看看<code>Cat</code>能不能关掉，后来冲浪了一番，发现我们这个旧版本没办法关。怎么办呢？被逼出来的</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/7/8/16bd241c791fd920?w=1214&amp;h=450&amp;f=png&amp;s=51685" alt="" />
+在代码目录里，搞个同名类，覆盖原有类，让他默认打点的时候不要初始化。
+魔改一把，生效！美滋滋！</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">classLoader默认会读同名最近的那个类</pre></td></tr></table>
+</div>
+</div>
+<p>最后跑了一下单测，<code>16s</code>，好爽!</p>
+
+<h1 id="总结一把">总结一把</h1>
+
+<p>自从单测优化之后，后面制定规范让大家交付测试的时候自己先跑遍单测，这样就能有效的避免因为一些小错误返工 4、5次的尴尬，而且单测测的更全，更不容易出错，利已利民。</p>
+
+<p>这里贴一下单测的核心类的注释：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/7/8/16bd2463331470f0?w=1522&amp;h=878&amp;f=png&amp;s=149648" alt="" /></p>
+
+<p><strong>多点时间陪陪家人</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">我：爽吗？我问对面的开发。
+他：太爽了！
+我笑了笑，深藏功与名（：</pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">小之</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-08
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/jdk-proxy-theory/">
+            <span class="next-text nav-default">看过Jdk动态代理类长啥样吗？Jdk动态代理原理源码一本到</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:caiyanzhi1994@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/evancyz" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">小之</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

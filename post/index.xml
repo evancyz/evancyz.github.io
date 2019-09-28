@@ -6,10 +6,28 @@
     <description>Recent content in Posts on 小之的技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 01 Mar 2019 12:18:50 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jul 2019 12:24:41 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解</title>
+      <link>http://localhost:1313/post/optimize-webapp-start-time/</link>
+      <pubDate>Mon, 08 Jul 2019 12:24:41 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/optimize-webapp-start-time/</guid>
+      <description>某个平凡熟悉的早上，传来测试同学的一阵哀嚎：那个谁！你提测的代码连运行都不能运行，苦涩。</description>
+    </item>
+    
+    <item>
+      <title>看过Jdk动态代理类长啥样吗？Jdk动态代理原理源码一本到</title>
+      <link>http://localhost:1313/post/jdk-proxy-theory/</link>
+      <pubDate>Mon, 08 Apr 2019 12:22:52 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/jdk-proxy-theory/</guid>
+      <description>哈喽呀~~筒子们，小之最近在看Spring的源码，正好遇到几个Aop的问题涉及到Java的动态代理，之前对这个东西大致能理解，但是没有仔细的去看源码，今天我们来扒一扒它的真面目。</description>
+    </item>
     
     <item>
       <title>你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？</title>
