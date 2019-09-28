@@ -17,7 +17,7 @@
       <pubDate>Thu, 17 Jan 2019 12:15:36 +0800</pubDate>
       
       <guid>http://localhost:1313/post/why-init-threadpool-but-main-thread-not-exit/</guid>
-      <description>起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&amp;gt; System.out.println(&amp;#34;Hello &amp;#34;)); System.out.println(&amp;#34;World&amp;#34;);</description>
+      <description>Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码</description>
     </item>
     
   </channel>
