@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="小之" /><meta name="description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&amp;gt; System.out.println(&amp;#34;Hello &amp;#34;)); System.out.println(&amp;#34;World&amp;#34;);" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="小之" /><meta name="description" content="Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -39,17 +39,17 @@
 
 
 <meta property="og:title" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？" />
-<meta property="og:description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);" />
+<meta property="og:description" content="Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/why-init-threadpool-but-main-thread-not-exit/" />
-<meta property="article:published_time" content="2019-09-28T11:41:19+08:00" />
-<meta property="article:modified_time" content="2019-09-28T11:41:19+08:00" />
+<meta property="article:published_time" content="2019-01-17T12:15:36+08:00" />
+<meta property="article:modified_time" content="2019-01-17T12:15:36+08:00" />
 <meta itemprop="name" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？">
-<meta itemprop="description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);">
+<meta itemprop="description" content="Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码">
 
 
-<meta itemprop="datePublished" content="2019-09-28T11:41:19&#43;08:00" />
-<meta itemprop="dateModified" content="2019-09-28T11:41:19&#43;08:00" />
+<meta itemprop="datePublished" content="2019-01-17T12:15:36&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-17T12:15:36&#43;08:00" />
 <meta itemprop="wordCount" content="2120">
 
 
@@ -57,7 +57,7 @@
 <meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？"/>
-<meta name="twitter:description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);"/>
+<meta name="twitter:description" content="Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -123,7 +123,7 @@
       <h1 class="post-title">JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2019-09-28 </span>
+        <span class="post-time"> 2019-01-17 </span>
         
         
       </div>
@@ -520,7 +520,7 @@
   <p class="copyright-item">
     <span class="item-title">上次更新</span>
     <span class="item-content">
-        2019-09-28
+        2019-01-17
         
     </span>
   </p>
