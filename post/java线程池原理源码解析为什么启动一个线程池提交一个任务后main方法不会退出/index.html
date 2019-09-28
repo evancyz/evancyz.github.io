@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？ - 小之的技术博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="evanyz" /><meta name="description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&amp;gt; System.out.println(&amp;#34;Hello &amp;#34;)); System.out.println(&amp;#34;World&amp;#34;);" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.1 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E4%BB%BB%E5%8A%A1%E5%90%8Emain%E6%96%B9%E6%B3%95%E4%B8%8D%E4%BC%9A%E9%80%80%E5%87%BA/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？" />
+<meta property="og:description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%8F%90%E4%BA%A4%E4%B8%80%E4%B8%AA%E4%BB%BB%E5%8A%A1%E5%90%8Emain%E6%96%B9%E6%B3%95%E4%B8%8D%E4%BC%9A%E9%80%80%E5%87%BA/" />
+<meta property="article:published_time" content="2019-09-28T11:41:19+08:00" />
+<meta property="article:modified_time" content="2019-09-28T11:41:19+08:00" />
+<meta itemprop="name" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？">
+<meta itemprop="description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);">
+
+
+<meta itemprop="datePublished" content="2019-09-28T11:41:19&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-28T11:41:19&#43;08:00" />
+<meta itemprop="wordCount" content="2121">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？"/>
+<meta name="twitter:description" content="起因 Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码 1 2 3 4 5 6 7 8 public static void main(String[] args) { ExecutorService service = Executors.newFixedThreadPool(10); service.submit(() -&gt; System.out.println(&#34;Hello &#34;)); System.out.println(&#34;World&#34;);"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">小之</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">小之</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-28 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#起因">起因</a></li>
+<li><a href="#结论">结论</a></li>
+<li><a href="#源码分析">源码分析</a>
+<ul>
+<li><a href="#为什么worker线程不会死">为什么Worker线程不会死</a>
+<ul>
+<li><a href="#小结">小结：</a></li>
+</ul></li>
+<li><a href="#worker线程如何被设置成非守护线程">Worker线程如何被设置成非守护线程</a></li>
+</ul></li>
+<li><a href="#为什么要等到非守护线程全部结束的时候-jvm才会退出">为什么要等到非守护线程全部结束的时候，JVM才会退出？</a></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="起因">起因</h2>
+
+<p>Hello，骚年们，大家新年快乐，头发有没有少呀？今天我们来看一件有趣的事，首先来看段代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="p">[]</span> <span class="nf">args</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">ExecutorService</span> <span class="nf">service</span> <span class="o">=</span> <span class="n">Executors</span><span class="p">.</span><span class="na">newFixedThreadPool</span><span class="p">(</span><span class="n">10</span><span class="p">);</span>
+
+        <span class="n">service</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Hello &#34;</span><span class="p">));</span>
+
+        <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;World&#34;</span><span class="p">);</span>
+    <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>呵呵，执行结果谁都知道，显而易见</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/1/17/1685b740a7ea6e56?w=1442&amp;h=388&amp;f=png&amp;s=41784" alt="" />
+但是小老弟，有没有发现这个程序<strong>一直都没有结束</strong>呢？明明这个任务都已经跑完了呀~</p>
+
+<h2 id="结论">结论</h2>
+
+<p>开始了吗？不好意思已经结束了，嘻嘻，大过年的不卖关子，我们直接公布答案，造成不退出的原因是这样：</p>
+
+<ul>
+<li><del>你丑</del></li>
+<li>线程池的创建的时候，第一次<code>submit</code>操作会创建<code>Worker</code>线程（负责去拿任务处理），该线程里写了一个死循环，所以这个<code>Worker</code>线程不会死</li>
+<li><code>Worker</code>线程在创建的时候，被设置成了<strong>非守护线程</strong>，<code>thread.setDaemon(false)</code></li>
+<li>早在<code>JDK1.5</code>的时候，就规定了当所有非守护线程退出时，<code>JVM</code>才会退出，<code>Main</code>方法主线程和<code>Worker</code>线程都是非守护线程，所以不会死。</li>
+</ul>
+
+<p>下面我们会就上面几个问题，每一个问题进行源码分析，感兴趣的看官老爷可以继续，看看又不会掉发（逃</p>
+
+<h2 id="源码分析">源码分析</h2>
+
+<h3 id="为什么worker线程不会死">为什么Worker线程不会死</h3>
+
+<p>梦开始的地方先从初始化开始</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">//该方法利用多台实例化了一个ThreadPoolExecutor线程池，该线程池继承了一个抽象类AbstractExecutorService
+</span><span class="c1"></span><span class="n">ExecutorService</span> <span class="nf">service</span> <span class="o">=</span> <span class="n">Executors</span><span class="p">.</span><span class="na">newFixedThreadPool</span><span class="p">(</span><span class="n">10</span><span class="p">);</span>
+<span class="c1">//调用了ThreadPoolExecutor.submit方法也就是父类的AbstractExecutorService.submit，该方法内部会去调用execute()方法
+</span><span class="c1"></span><span class="n">service</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Hello &#34;</span><span class="p">));</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>于是我们定位到<code>ThreadPoolExecutor</code>类的<code>execute</code>方法，我截取了部分如下，<strong>注意代码中我打注释的地方</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">void</span> <span class="n">execute</span><span class="p">(</span><span class="n">Runnable</span> <span class="nf">command</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+        <span class="c1">//如果工作线程还没有超过核心线程数
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">workerCountOf</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">corePoolSize</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//去添加工作线程
+</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">addWorker</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="kc">true</span><span class="p">))</span>
+                <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>线程池把每一个运行任务的工作线程抽象成了<code>Worker</code>，我们定位到内部<code>addWorker</code>方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java">            <span class="p">...</span>
+            <span class="c1">//新建一个Worker
+</span><span class="c1"></span>            <span class="n">w</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Worker</span><span class="p">(</span><span class="n">firstTask</span><span class="p">);</span>
+            <span class="kd">final</span> <span class="nf">Thread</span> <span class="n">t</span> <span class="o">=</span> <span class="n">w</span><span class="p">.</span><span class="na">thread</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">//下面的操作是将线程添加到工作线程集合里
+</span><span class="c1"></span>                <span class="kd">final</span> <span class="nf">ReentrantLock</span> <span class="n">mainLock</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">mainLock</span><span class="p">;</span>
+                <span class="n">mainLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="kt">int</span> <span class="nf">rs</span> <span class="o">=</span> <span class="n">runStateOf</span><span class="p">(</span><span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">());</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">rs</span> <span class="o">&lt;</span> <span class="n">SHUTDOWN</span> <span class="o">||</span>
+                        <span class="p">(</span><span class="n">rs</span> <span class="o">==</span> <span class="n">SHUTDOWN</span> <span class="o">&amp;&amp;</span> <span class="n">firstTask</span> <span class="o">==</span> <span class="kc">null</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">isAlive</span><span class="p">())</span> <span class="c1">// precheck that t is startable
+</span><span class="c1"></span>                            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalThreadStateException</span><span class="p">();</span>
+                        <span class="n">workers</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+                        <span class="kt">int</span> <span class="nf">s</span> <span class="o">=</span> <span class="n">workers</span><span class="p">.</span><span class="na">size</span><span class="p">();</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">largestPoolSize</span><span class="p">)</span>
+                            <span class="n">largestPoolSize</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+                        <span class="n">workerAdded</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+                    <span class="n">mainLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span>
+                <span class="p">}</span>
+                <span class="c1">//如果添加成功的话
+</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">workerAdded</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">//把工作线程跑起来
+</span><span class="c1"></span>                    <span class="n">t</span><span class="p">.</span><span class="na">start</span><span class="p">();</span>
+                    <span class="n">workerStarted</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">workerStarted</span><span class="p">)</span>
+                <span class="n">addWorkerFailed</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">workerStarted</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这时候一个工作线程也就跑起来了，可以去执行任务了，我们定位到<code>ThreadPoolExecutor</code>的内部类<code>Worker</code>的<code>run</code>方法里</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">//该类调用了runWorker方法
+</span><span class="c1"></span><span class="kd">public</span> <span class="nf">void</span> <span class="n">run</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">runWorker</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span>
+        </code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="nf">void</span> <span class="n">runWorker</span><span class="p">(</span><span class="n">Worker</span> <span class="nf">w</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Thread</span> <span class="nf">wt</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">();</span>
+        <span class="n">Runnable</span> <span class="nf">task</span> <span class="o">=</span> <span class="n">w</span><span class="p">.</span><span class="na">firstTask</span><span class="p">;</span>
+        <span class="n">w</span><span class="p">.</span><span class="na">firstTask</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="n">w</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span> <span class="c1">// allow interrupts
+</span><span class="c1"></span>        <span class="kt">boolean</span> <span class="nf">completedAbruptly</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">//主要看这个while,会看这个Worker有没有任务，如果没有就会去取，这里是一个死循环，然后我们定位到getTask()方法，看他是怎么取任务的
+</span><span class="c1"></span>            <span class="k">while</span> <span class="p">(</span><span class="n">task</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="p">(</span><span class="n">task</span> <span class="o">=</span> <span class="n">getTask</span><span class="p">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">w</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">runStateAtLeast</span><span class="p">(</span><span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">(),</span> <span class="n">STOP</span><span class="p">)</span> <span class="o">||</span>
+                     <span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="na">interrupted</span><span class="p">()</span> <span class="o">&amp;&amp;</span>
+                      <span class="n">runStateAtLeast</span><span class="p">(</span><span class="n">ctl</span><span class="p">.</span><span class="na">get</span><span class="p">(),</span> <span class="n">STOP</span><span class="p">)))</span> <span class="o">&amp;&amp;</span>
+                    <span class="o">!</span><span class="n">wt</span><span class="p">.</span><span class="na">isInterrupted</span><span class="p">())</span>
+                    <span class="n">wt</span><span class="p">.</span><span class="na">interrupt</span><span class="p">();</span>
+            <span class="p">...</span>
+               
+    <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里解释了，工作线程其实不会死（超时时间不在本期范围内），我们继续定位到内部的<code>getTask()</code>方法，看他是怎么取任务的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="nf">Runnable</span> <span class="n">getTask</span><span class="p">()</span> <span class="p">{</span>
+            <span class="p">...</span>
+            <span class="c1">//有没有设置核心线程超时时间（默认没有）当前工作的线程数大于了线程池的核心线城市
+</span><span class="c1"></span>            <span class="kt">boolean</span> <span class="nf">timed</span> <span class="o">=</span> <span class="n">allowCoreThreadTimeOut</span> <span class="o">||</span> <span class="n">wc</span> <span class="o">&gt;</span> <span class="n">corePoolSize</span><span class="p">;</span>
+            <span class="p">...</span>
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="n">Runnable</span> <span class="nf">r</span> <span class="o">=</span> <span class="n">timed</span> <span class="o">?</span>
+                    <span class="n">workQueue</span><span class="p">.</span><span class="na">poll</span><span class="p">(</span><span class="n">keepAliveTime</span><span class="p">,</span> <span class="n">TimeUnit</span><span class="p">.</span><span class="na">NANOSECONDS</span><span class="p">)</span> <span class="o">:</span>
+                    <span class="c1">//调用workQueue的Take方法，WorkQueue默认是一个BlockingQueue，所以调用take方法会导致当前工作线程阻塞掉，指到拿到
+</span><span class="c1"></span>                    <span class="n">workQueue</span><span class="p">.</span><span class="na">take</span><span class="p">();</span>
+                <span class="c1">//如果拿到任务就返回
+</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+                <span class="n">timedOut</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                <span class="p">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="小结">小结：</h4>
+
+<p>这里想说的有两点：</p>
+
+<ul>
+<li>工作线程不会死（不设置线程存活时间，默认情况下），会一直拿任务，所以工作线程会一直活着</li>
+
+<li><p>工作线程拿任务的时候，默认情况下，因为用的是<code>BlockingQueue</code>的<code>take()</code>拿不到任务会阻塞</p>
+
+<h3 id="worker线程如何被设置成非守护线程">Worker线程如何被设置成非守护线程</h3>
+
+<p>首先我们来到<code>ThreadPoolExecutor</code>的构造方法里</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">ThreadPoolExecutor</span><span class="p">(</span><span class="kt">int</span> <span class="nf">corePoolSize</span><span class="p">,</span>
+                          <span class="kt">int</span> <span class="nf">maximumPoolSize</span><span class="p">,</span>
+                          <span class="kt">long</span> <span class="nf">keepAliveTime</span><span class="p">,</span>
+                          <span class="n">TimeUnit</span> <span class="nf">unit</span><span class="p">,</span>
+                          <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="nf">workQueue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">(</span><span class="n">corePoolSize</span><span class="p">,</span> <span class="n">maximumPoolSize</span><span class="p">,</span> <span class="n">keepAliveTime</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">workQueue</span><span class="p">,</span>
+         <span class="n">Executors</span><span class="p">.</span><span class="na">defaultThreadFactory</span><span class="p">(),</span> <span class="n">defaultHandler</span><span class="p">);</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>构造器里传入了一个<code>ThreadFactory</code>也就是<code>Executors.defaultThreadFactory()</code>，用来产生工作线程，一步一步的点进去我们会定位到<code>Executors</code>内部类<code>DefaultThreadFactory</code>的<code>newThread</code>方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">Thread</span> <span class="n">newThread</span><span class="p">(</span><span class="n">Runnable</span> <span class="nf">r</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Thread</span> <span class="nf">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span>
+                              <span class="n">namePrefix</span> <span class="o">+</span> <span class="n">threadNumber</span><span class="p">.</span><span class="na">getAndIncrement</span><span class="p">(),</span>
+                              <span class="n">0</span><span class="p">);</span>
+        <span class="c1">//关键代码是这里，把线程设置成了非守护线程
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">isDaemon</span><span class="p">())</span>
+            <span class="n">t</span><span class="p">.</span><span class="na">setDaemon</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="na">getPriority</span><span class="p">()</span> <span class="o">!=</span> <span class="n">Thread</span><span class="p">.</span><span class="na">NORM_PRIORITY</span><span class="p">)</span>
+            <span class="n">t</span><span class="p">.</span><span class="na">setPriority</span><span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="na">NORM_PRIORITY</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+    <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<p>然后我们看<code>ThreadPoolExector</code>方法去<code>new Worker()的时候</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Worker</span><span class="p">(</span><span class="n">Runnable</span> <span class="nf">firstTask</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">setState</span><span class="p">(</span><span class="o">-</span><span class="n">1</span><span class="p">);</span> <span class="c1">// inhibit interrupts until runWorker
+</span><span class="c1"></span>            <span class="k">this</span><span class="p">.</span><span class="na">firstTask</span> <span class="o">=</span> <span class="n">firstTask</span><span class="p">;</span>
+            <span class="c1">//这里的ThreadPool，就是上面提到的那个生产非守护线程的线程工厂
+</span><span class="c1"></span>            <span class="k">this</span><span class="p">.</span><span class="na">thread</span> <span class="o">=</span> <span class="n">getThreadFactory</span><span class="p">().</span><span class="na">newThread</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>看上面的<strong>注释下面的内容</strong>，为什么是非守护线程就真相大白了。</p>
+
+<h2 id="为什么要等到非守护线程全部结束的时候-jvm才会退出">为什么要等到非守护线程全部结束的时候，JVM才会退出？</h2>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/1/17/1685bb73d9c7babe?w=2104&amp;h=666&amp;f=png&amp;s=136403" alt="" />
+网上冲浪<code>JdkDoc</code>注意我标蓝的部分，这跟jvm的实现有关，先知道结论，具体为什么我们留着下期再讲~</p>
+
+<h2 id="总结">总结</h2>
+
+<p>跟同事在<code>codeReview</code>的时候，突然聊到单启动线程池，Main方法会不会死明明已经都结束了呀，然后就本地跑了试了一下，跟日常的理解还是不一样的，查了一下原因，还是蛮有趣的，日常工作中多保持好奇心，不要怕难，你会越来越强的！</p>
+
+<p><strong>你变强了，也变秃了（逃</strong></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">evanyz</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-28
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:caiyanzhi1994@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/evancyz" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">evanyz</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
