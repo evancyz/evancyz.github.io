@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？ - 小之的技术博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="小之" /><meta name="description" content="Hello，骚年们，当大家欢脱的Debug接口的时候，有没有在意过Chrome Network里Size和Time两项是两行呢？" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.1 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/the-size-and-time-meaning-in-chrome/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？" />
+<meta property="og:description" content="Hello，骚年们，当大家欢脱的Debug接口的时候，有没有在意过Chrome Network里Size和Time两项是两行呢？" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/the-size-and-time-meaning-in-chrome/" />
+<meta property="article:published_time" content="2019-03-01T12:18:50+08:00" />
+<meta property="article:modified_time" content="2019-03-01T12:18:50+08:00" />
+<meta itemprop="name" content="你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？">
+<meta itemprop="description" content="Hello，骚年们，当大家欢脱的Debug接口的时候，有没有在意过Chrome Network里Size和Time两项是两行呢？">
+
+
+<meta itemprop="datePublished" content="2019-03-01T12:18:50&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-01T12:18:50&#43;08:00" />
+<meta itemprop="wordCount" content="803">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？"/>
+<meta name="twitter:description" content="Hello，骚年们，当大家欢脱的Debug接口的时候，有没有在意过Chrome Network里Size和Time两项是两行呢？"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">小之</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">小之</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">你知道Chrome Network ，Size 和 Time 为什么有两行参数吗？</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-01 </span>
+        
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#关于size列">关于Size列</a>
+<ul>
+<li><a href="#解释">解释：</a></li>
+<li><a href="#需要注意的点">需要注意的点：</a></li>
+</ul></li>
+<li><a href="#关于time列">关于Time列</a>
+<ul>
+<li><a href="#解释-1">解释：</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>Hello，骚年们，当大家欢脱的<code>Debug</code>接口的时候，有没有在意过<code>Chrome Network</code>里<code>Size</code>和<code>Time</code>两项是两行呢？如下图箭头所示：</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/1/16937d90c85865a9?w=2698&amp;h=560&amp;f=png&amp;s=189560" alt="" />
+借这篇文章我们来分析一下它的含义，我们聚焦<code>/api/v1/myaddress/all</code>这个接口</p>
+
+<h3 id="关于size列">关于Size列</h3>
+
+<p><code>Size</code>有两行：
+* 第一行表示的是数据的<strong>传输时</strong>的大小，例如上图中的<code>44.3KB</code>，
+* 第二行表示的是数据<strong>实际</strong>的大小<code>441KB</code></p>
+
+<h4 id="解释">解释：</h4>
+
+<p>因为这个接口返回数据量比较大，所以后端采取了<code>gzip</code>压缩，从响应头的<code>Content-Encoding</code>我们也能看出</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/1/1693767bc6eb17b9?w=2484&amp;h=432&amp;f=png&amp;s=140268" alt="" />
+在服务器端采取<code>gzip</code>压缩算法将将原有<code>441KB</code>压缩至<code>44.3KB</code>,传输大小缩短<code>10倍</code>，大大的提高了接口传输的效率。</p>
+
+<h4 id="需要注意的点">需要注意的点：</h4>
+
+<p><code>gzip</code>压缩只会压缩<code>响应体</code>内容，
+所以适用于返回数据量大的时候，如果数据量太小的话，有可能会导致数据<strong>传输时</strong>的大小比<strong>实际</strong>大小要大(<em>例如加入一些额外的响应头</em>)</p>
+
+<p>一般例如<code>SpringMVC</code>等Web框架可以指定数据大小到多少时使用<code>gzip</code>压缩</p>
+
+<hr />
+
+<h3 id="关于time列">关于Time列</h3>
+
+<p>Time有两行：
+* 第一行表示从客户端发送请求到服务端返回所有数据所花费的总时间，对于上图来说就是<code>598ms</code>
+* 第二行表示的是从客户端发送请求到服务器端返回第一个字节所表示的时间，对于上图来说就是<code>118ms</code>
+我们把鼠标放到最右边那个蓝条会有时间的详细说明，如下</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/1/16937dcfe182100a?w=2724&amp;h=726&amp;f=png&amp;s=306520" alt="" />
+下图是这些时间含义的解释</p>
+
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/1/16937ea517c4e200?w=1790&amp;h=1128&amp;f=png&amp;s=282182" alt="" /></p>
+
+<h4 id="解释-1">解释：</h4>
+
+<p>第一行的时间就代表了上图列的所有项目：例如<code>解析dns</code>，<code>建立连接</code>，<code>等待服务器返回数据</code>，<code>传输数据</code>等</p>
+
+<p>第二行的时间是 <code>总时间 - 数据传输</code>的时间</p>
+
+<h3 id="总结">总结</h3>
+
+<p>从上面的分析中我们看到 从<strong>客户端请求到服务器处理结束准备返回数据</strong>花了<code>118ms</code>（*算蛮久了*），但是在进行<strong>传输数据</strong>的时候花费了<code>480ms</code></p>
+
+<p>每个用户网络带宽不一样，对于网慢的用户来说，这个体验可能更差，所以在编写代码的时候，返回的数据量要尽量精简。</p>
+
+<p>个人觉得理解<code>Chrome Network</code>的参数有助于我们对接口的性能有一个比较直观的感觉~</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">小之</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-03-01
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/why-init-threadpool-but-main-thread-not-exit/">
+            <span class="next-text nav-default">JAVA线程池原理源码解析—为什么启动一个线程池，提交一个任务后，Main方法不会退出？</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:caiyanzhi1994@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/evancyz" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2017 - 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">小之</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
