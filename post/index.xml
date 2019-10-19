@@ -6,19 +6,10 @@
     <description>Recent content in Posts on 小之的技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 19 Oct 2019 11:51:45 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jul 2019 12:24:41 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Map</title>
-      <link>http://localhost:1313/post/map/</link>
-      <pubDate>Sat, 19 Oct 2019 11:51:45 +0800</pubDate>
-      
-      <guid>http://localhost:1313/post/map/</guid>
-      <description>没写完，先不要看。。</description>
-    </item>
     
     <item>
       <title>务实优化：将本地单元测试Spring启动速度从1分半优化到16秒，全流程详解</title>
