@@ -17,7 +17,7 @@
       <pubDate>Sat, 19 Oct 2019 11:51:45 +0800</pubDate>
       
       <guid>http://localhost:1313/post/map/</guid>
-      <description>从Map.java的注释中，看出java对Map的定义： * Map是用来存放键值对的（key-value），不能包含重复的key，每一个key</description>
+      <description>从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最</description>
     </item>
     
     <item>

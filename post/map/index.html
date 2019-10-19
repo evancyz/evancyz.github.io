@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="小之" /><meta name="description" content="从Map.java的注释中，看出java对Map的定义： * Map是用来存放键值对的（key-value），不能包含重复的key，每一个key" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="小之" /><meta name="description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -39,25 +39,25 @@
 
 
 <meta property="og:title" content="Map" />
-<meta property="og:description" content="从Map.java的注释中，看出java对Map的定义： * Map是用来存放键值对的（key-value），不能包含重复的key，每一个key" />
+<meta property="og:description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/map/" />
 <meta property="article:published_time" content="2019-10-19T11:51:45+08:00" />
 <meta property="article:modified_time" content="2019-10-19T11:51:45+08:00" />
 <meta itemprop="name" content="Map">
-<meta itemprop="description" content="从Map.java的注释中，看出java对Map的定义： * Map是用来存放键值对的（key-value），不能包含重复的key，每一个key">
+<meta itemprop="description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最">
 
 
 <meta itemprop="datePublished" content="2019-10-19T11:51:45&#43;08:00" />
 <meta itemprop="dateModified" content="2019-10-19T11:51:45&#43;08:00" />
-<meta itemprop="wordCount" content="1174">
+<meta itemprop="wordCount" content="1166">
 
 
 
 <meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Map"/>
-<meta name="twitter:description" content="从Map.java的注释中，看出java对Map的定义： * Map是用来存放键值对的（key-value），不能包含重复的key，每一个key"/>
+<meta name="twitter:description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -136,15 +136,24 @@
   </div>
 </div>
     <div class="post-content">
-      <p>从<code>Map.java</code>的注释中，看出<code>java</code>对<code>Map</code>的定义：
-* Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最多映射一个value
-* Map需要提供3种<code>Collection</code>视图
-  * 所有的<code>key</code>聚合成的<code>Set</code>
-  * 所有的<code>value</code>聚合成<code>Collection</code>
-  * 所有的键值对的聚合成的<code>Set</code>
-* 所有用作一般用途的<code>Map</code>得提供两个标准的构造器（建议，不强制，所有jdk里的map是这么干的）
-  * 一个创建<code>empty map</code>的无参构造器
-  * 一个参数为<code>Map</code>的构造器，方便用户去<code>copy</code>这个<code>Map</code></p>
+      <p>从<code>Map.java</code>的注释中，看出<code>java</code>对<code>Map</code>的定义：</p>
+
+<ul>
+<li>Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最多映射一个value</li>
+<li>Map需要提供3种<code>Collection</code>视图
+
+<ul>
+<li>所有的<code>key</code>聚合成的<code>Set</code></li>
+<li>所有的<code>value</code>聚合成<code>Collection</code></li>
+<li>所有的键值对的聚合成的<code>Set</code></li>
+</ul></li>
+<li>所有用作一般用途的<code>Map</code>得提供两个标准的构造器（建议，不强制，所有jdk里的map是这么干的）
+
+<ul>
+<li>一个创建<code>empty map</code>的无参构造器</li>
+<li>一个参数为<code>Map</code>的构造器，方便用户去<code>copy</code>这个<code>Map</code></li>
+</ul></li>
+</ul>
 
 <p>工具方法就像工具人一样，很好用，但是无关紧要</p>
 <div class="highlight"><div class="chroma">
