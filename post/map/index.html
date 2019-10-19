@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="小之" /><meta name="description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="小之" /><meta name="description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -39,25 +39,25 @@
 
 
 <meta property="og:title" content="Map" />
-<meta property="og:description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最" />
+<meta property="og:description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/map/" />
 <meta property="article:published_time" content="2019-10-19T11:51:45+08:00" />
 <meta property="article:modified_time" content="2019-10-19T11:51:45+08:00" />
 <meta itemprop="name" content="Map">
-<meta itemprop="description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最">
+<meta itemprop="description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke">
 
 
 <meta itemprop="datePublished" content="2019-10-19T11:51:45&#43;08:00" />
 <meta itemprop="dateModified" content="2019-10-19T11:51:45&#43;08:00" />
-<meta itemprop="wordCount" content="1166">
+<meta itemprop="wordCount" content="1178">
 
 
 
 <meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Map"/>
-<meta name="twitter:description" content="从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最"/>
+<meta name="twitter:description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -132,11 +132,23 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">文章目录</h2>
   <div class="post-toc-content always-active">
-    
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#定义">定义</a></li>
+<li><a href="#源码分析">源码分析</a>
+<ul>
+<li><a href="#框架分析">框架分析</a></li>
+</ul></li>
+</ul>
+</nav>
   </div>
 </div>
     <div class="post-content">
-      <p>从<code>Map.java</code>的注释中，看出<code>java</code>对<code>Map</code>的定义：</p>
+      
+
+<h1 id="定义">定义</h1>
+
+<p>从<code>Map.java</code>的注释中，看出<code>java</code>对<code>Map</code>的定义：</p>
 
 <ul>
 <li>Map是用来存放键值对的（key-value），不能包含重复的key，每一个key最多映射一个value</li>
@@ -154,6 +166,12 @@
 <li>一个参数为<code>Map</code>的构造器，方便用户去<code>copy</code>这个<code>Map</code></li>
 </ul></li>
 </ul>
+
+<h1 id="源码分析">源码分析</h1>
+
+<h2 id="框架分析">框架分析</h2>
+
+<p>这里只涉及到有哪些方法，不涉及到方法具体细节，同时省略一些无关紧要的工具方法</p>
 
 <p>工具方法就像工具人一样，很好用，但是无关紧要</p>
 <div class="highlight"><div class="chroma">
@@ -194,8 +212,6 @@
 </span><span class="lnt">34
 </span><span class="lnt">35
 </span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">interface</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span>
@@ -223,19 +239,17 @@
 <span class="kt">int</span> <span class="nf">hashCode</span><span class="p">();</span>
 
 <span class="c1">// Defaultable methods
-</span><span class="c1">//静态工具方法省略...
+</span><span class="c1">//工具方法省略...
 </span><span class="c1"></span>
-
 <span class="kd">interface</span> <span class="nf">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span>
   <span class="n">K</span> <span class="nf">getKey</span><span class="p">();</span>
   <span class="n">V</span> <span class="nf">getValue</span><span class="p">();</span>
   <span class="n">V</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">V</span> <span class="nf">value</span><span class="p">);</span>
+  <span class="n">V</span> <span class="nf">setValue</span><span class="p">(</span><span class="n">V</span> <span class="nf">value</span><span class="p">);</span>
   <span class="kt">boolean</span> <span class="nf">equals</span><span class="p">(</span><span class="n">Object</span> <span class="nf">o</span><span class="p">);</span>
   <span class="kt">int</span> <span class="nf">hashCode</span><span class="p">();</span>
-  
-  <span class="c1">//静态工具方法省略...
-</span><span class="c1"></span>  <span class="p">...</span>
-<span class="p">}</span></code></pre></td></tr></table>
+  <span class="c1">//工具方法省略...
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -291,11 +305,10 @@
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">get</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
   <span class="c1">// Modification Operations
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">put</span><span class="p">(</span><span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="p">();</span>
-  <span class="p">}</span>
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">put</span><span class="p">(</span><span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="k">throw</span> <span class="k">new</span> <span class="n">UnsupportedOperationException</span><span class="p">();}</span>
   <span class="kd">public</span> <span class="nf">V</span> <span class="n">remove</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="c1">// Bulk Operations
+</span><span class="c1"></span>  
+  <span class="c1">// Bulk Operations
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">putAll</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">clear</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
@@ -311,14 +324,15 @@
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">equals</span><span class="p">(</span><span class="n">Object</span> <span class="nf">o</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">int</span> <span class="n">hashCode</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">String</span> <span class="n">toString</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+  <span class="c1">// Object
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">String</span> <span class="n">toString</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">protected</span> <span class="nf">Object</span> <span class="n">clone</span><span class="p">()</span> <span class="kd">throws</span> <span class="nf">CloneNotSupportedException</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">static</span> <span class="kd">class</span> <span class="nf">SimpleEntry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">Serializable</span> <span class="p">{</span><span class="c1">//...}
+  <span class="c1">// Entry
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">static</span> <span class="kd">class</span> <span class="nf">SimpleEntry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">Serializable</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
   <span class="kd">public</span> <span class="nf">static</span> <span class="kd">class</span> <span class="nf">SimpleImmutableEntry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">Serializable</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-<span class="p">}</span></code></pre></td></tr></table>
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -426,14 +440,10 @@
 </span><span class="lnt">102
 </span><span class="lnt">103
 </span><span class="lnt">104
-</span><span class="lnt">105
-</span><span class="lnt">106
-</span><span class="lnt">107
-</span><span class="lnt">108
-</span><span class="lnt">109
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">class</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">extends</span> <span class="n">AbstractMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Cloneable</span><span class="p">,</span> <span class="n">Serializable</span> <span class="p">{</span>
+  
   <span class="kd">static</span> <span class="nf">final</span> <span class="kt">int</span> <span class="nf">DEFAULT_INITIAL_CAPACITY</span> <span class="o">=</span> <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">4</span><span class="p">;</span> <span class="c1">// aka 16
 </span><span class="c1"></span>  <span class="kd">static</span> <span class="nf">final</span> <span class="kt">int</span> <span class="nf">MAXIMUM_CAPACITY</span> <span class="o">=</span> <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">30</span><span class="p">;</span>
   <span class="kd">static</span> <span class="nf">final</span> <span class="kt">float</span> <span class="nf">DEFAULT_LOAD_FACTOR</span> <span class="o">=</span> <span class="n">0</span><span class="p">.</span><span class="na">75f</span><span class="p">;</span>
@@ -441,7 +451,6 @@
   <span class="kd">static</span> <span class="nf">final</span> <span class="kt">int</span> <span class="nf">UNTREEIFY_THRESHOLD</span> <span class="o">=</span> <span class="n">6</span><span class="p">;</span>
   <span class="kd">static</span> <span class="nf">final</span> <span class="kt">int</span> <span class="nf">MIN_TREEIFY_CAPACITY</span> <span class="o">=</span> <span class="n">64</span><span class="p">;</span>
   
-
   <span class="cm">/* ---------------- Static utilities -------------- */</span>
   <span class="c1">//工具方法省略
 </span><span class="c1"></span>  
@@ -453,56 +462,67 @@
   <span class="kt">int</span> <span class="nf">threshold</span><span class="p">;</span>
   <span class="kd">final</span> <span class="nf">float</span> <span class="n">loadFactor</span><span class="p">;</span>
   <span class="cm">/* ---------------- Public operations -------------- */</span>
-  <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">(</span><span class="kt">int</span> <span class="nf">initialCapacity</span><span class="p">,</span> <span class="kt">float</span> <span class="nf">loadFactor</span><span class="p">)</span> <span class="p">{</span><span class="c1">//..}
+  
+  <span class="c1">//Construct
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">(</span><span class="kt">int</span> <span class="nf">initialCapacity</span><span class="p">,</span> <span class="kt">float</span> <span class="nf">loadFactor</span><span class="p">)</span> <span class="p">{</span><span class="c1">//..}
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">(</span><span class="kt">int</span> <span class="nf">initialCapacity</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">this</span><span class="p">.</span><span class="na">loadFactor</span> <span class="o">=</span> <span class="n">DEFAULT_LOAD_FACTOR</span><span class="p">;</span>
-  <span class="p">}</span>
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">()</span> <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="na">loadFactor</span> <span class="o">=</span> <span class="n">DEFAULT_LOAD_FACTOR</span><span class="p">;}</span>
   <span class="kd">public</span> <span class="nf">HashMap</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">//Common
 </span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">void</span> <span class="n">putMapEntries</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">evict</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">int</span> <span class="n">size</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">isEmpty</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">get</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">getNode</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">containsKey</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">put</span><span class="p">(</span><span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">V</span> <span class="n">putVal</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">onlyIfAbsent</span><span class="p">,</span><span class="kt">boolean</span> <span class="nf">evict</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">[]</span> <span class="nf">resize</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">void</span> <span class="n">treeifyBin</span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">[]</span> <span class="nf">tab</span><span class="p">,</span> <span class="kt">int</span> <span class="nf">hash</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">putAll</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">remove</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">removeNode</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">key</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">value</span><span class="p">,</span><span class="kt">boolean</span> <span class="nf">matchValue</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">movable</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">void</span> <span class="n">clear</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">containsValue</span><span class="p">(</span><span class="n">Object</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="nf">keySet</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">KeySet</span> <span class="nf">extends</span> <span class="n">AbstractSet</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">Collection</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">values</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">Values</span> <span class="nf">extends</span> <span class="n">AbstractCollection</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="nf">entrySet</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">EntrySet</span> <span class="nf">extends</span> <span class="n">AbstractSet</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">remove</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>
-  <span class="kd">public</span> <span class="nf">Object</span> <span class="n">clone</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
-</span><span class="c1"></span>  
-  <span class="kd">final</span> <span class="nf">float</span> <span class="n">loadFactor</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">loadFactor</span><span class="p">;</span> <span class="p">}</span>
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">float</span> <span class="n">loadFactor</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">loadFactor</span><span class="p">;</span> <span class="p">}</span>
   <span class="kd">final</span> <span class="nf">int</span> <span class="n">capacity</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="kd">private</span> <span class="nf">void</span> <span class="n">writeObject</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">ObjectOutputStream</span> <span class="nf">s</span><span class="p">){</span><span class="c1">//...}
+  <span class="c1">// Query Operations
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">int</span> <span class="n">size</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">isEmpty</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">containsKey</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">containsValue</span><span class="p">(</span><span class="n">Object</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">get</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">// Modification Operations
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">V</span> <span class="n">put</span><span class="p">(</span><span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">boolean</span> <span class="n">remove</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">value</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">// Bulk Operations
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">putAll</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">clear</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">// Views
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="nf">keySet</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">Collection</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">values</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="nf">entrySet</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">//Object 
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">Object</span> <span class="n">clone</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="c1">//ViewExtend
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">KeySet</span> <span class="nf">extends</span> <span class="n">AbstractSet</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">Values</span> <span class="nf">extends</span> <span class="n">AbstractCollection</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">EntrySet</span> <span class="nf">extends</span> <span class="n">AbstractSet</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>
+  <span class="c1">//Implements Map.get and related methods
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">getNode</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">key</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="c1">//Implements Map.put and related methods
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">V</span> <span class="n">putVal</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">onlyIfAbsent</span><span class="p">,</span><span class="kt">boolean</span> <span class="nf">evict</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="c1">//Implements Map.put and related methods
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">removeNode</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">key</span><span class="p">,</span> <span class="n">Object</span> <span class="nf">value</span><span class="p">,</span><span class="kt">boolean</span> <span class="nf">matchValue</span><span class="p">,</span> <span class="kt">boolean</span> <span class="nf">movable</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  
+  <span class="kd">final</span> <span class="nf">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">[]</span> <span class="nf">resize</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">void</span> <span class="n">treeifyBin</span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">[]</span> <span class="nf">tab</span><span class="p">,</span> <span class="kt">int</span> <span class="nf">hash</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span> 
+  <span class="c1">// IO
+</span><span class="c1"></span>  <span class="kd">private</span> <span class="nf">void</span> <span class="n">writeObject</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">ObjectOutputStream</span> <span class="nf">s</span><span class="p">){</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">private</span> <span class="nf">void</span> <span class="n">readObject</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">ObjectInputStream</span> <span class="nf">s</span><span class="p">){</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="c1">// iterators
+  <span class="c1">// Iterators
 </span><span class="c1"></span>  <span class="kd">abstract</span> <span class="nf">class</span> <span class="n">HashIterator</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">KeyIterator</span> <span class="nf">extends</span> <span class="n">HashIterator</span> <span class="nf">implements</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">ValueIterator</span> <span class="nf">extends</span> <span class="n">HashIterator</span> <span class="nf">implements</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">final</span> <span class="nf">class</span> <span class="n">EntryIterator</span> <span class="nf">extends</span> <span class="n">HashIterator</span> <span class="nf">implements</span> <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="c1">//spliterators
+  <span class="c1">// Spliterators
 </span><span class="c1"></span>  <span class="kd">static</span> <span class="nf">class</span> <span class="n">HashMapSpliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">static</span> <span class="nf">final</span> <span class="kd">class</span> <span class="nf">KeySpliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">extends</span> <span class="n">HashMapSpliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">static</span> <span class="nf">final</span> <span class="kd">class</span> <span class="nf">ValueSpliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">extends</span> <span class="n">HashMapSpliterator</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
@@ -519,29 +539,13 @@
 </span><span class="c1"></span>  <span class="kt">void</span> <span class="nf">afterNodeRemoval</span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">p</span><span class="p">)</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kt">void</span> <span class="nf">internalWriteEntries</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">ObjectOutputStream</span> <span class="nf">s</span><span class="p">)</span> <span class="kd">throws</span> <span class="nf">IOException</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
-  <span class="c1">// Overrides of JDK8 Map extension methods
-</span><span class="c1"></span>  <span class="c1">//工具方法省略
+  <span class="c1">//工具方法省略
 </span><span class="c1"></span>  
-  <span class="kd">static</span> <span class="nf">class</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span>
-      <span class="kd">final</span> <span class="nf">int</span> <span class="n">hash</span><span class="p">;</span>
-      <span class="kd">final</span> <span class="nf">K</span> <span class="n">key</span><span class="p">;</span>
-      <span class="n">V</span> <span class="nf">value</span><span class="p">;</span>
-      <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">next</span><span class="p">;</span>
-      <span class="c1">//...
-</span><span class="c1"></span>  <span class="p">}</span>
-  
-  <span class="kd">static</span> <span class="nf">final</span> <span class="kd">class</span> <span class="nf">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">extends</span> <span class="n">LinkedHashMap</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span>
-      <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">parent</span><span class="p">;</span>  <span class="c1">// red-black tree links
-</span><span class="c1"></span>      <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">left</span><span class="p">;</span>
-      <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">right</span><span class="p">;</span>
-      <span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">prev</span><span class="p">;</span>    <span class="c1">// needed to unlink next upon deletion
-</span><span class="c1"></span>      <span class="kt">boolean</span> <span class="nf">red</span><span class="p">;</span>
-      <span class="n">TreeNode</span><span class="p">(</span><span class="kt">int</span> <span class="nf">hash</span><span class="p">,</span> <span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">val</span><span class="p">,</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">next</span><span class="p">)</span> <span class="p">{</span>
-      <span class="kd">super</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">next</span><span class="p">);</span>
-      <span class="p">}</span>
-      <span class="c1">//...
-</span><span class="c1"></span>  <span class="p">}</span>
-<span class="p">}</span></code></pre></td></tr></table>
+  <span class="c1">//Entry 
+</span><span class="c1"></span>  <span class="kd">static</span> <span class="nf">class</span> <span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span> 
+  <span class="kd">static</span> <span class="nf">final</span> <span class="kd">class</span> <span class="nf">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">extends</span> <span class="n">LinkedHashMap</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span><span class="c1">//...}
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
     </div>
