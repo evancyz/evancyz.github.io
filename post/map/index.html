@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="小之" /><meta name="description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="小之" /><meta name="description" content="引子 如何去分析HashMap的源码？看了下源码2400行，是不是有点虚？ 我们来看看面向对象三个基本特征：封装、继承、多态 * 封装：封装内部实现" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -39,25 +39,25 @@
 
 
 <meta property="og:title" content="Map" />
-<meta property="og:description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke" />
+<meta property="og:description" content="引子 如何去分析HashMap的源码？看了下源码2400行，是不是有点虚？ 我们来看看面向对象三个基本特征：封装、继承、多态 * 封装：封装内部实现" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://localhost:1313/post/map/" />
 <meta property="article:published_time" content="2019-10-19T11:51:45+08:00" />
 <meta property="article:modified_time" content="2019-10-19T11:51:45+08:00" />
 <meta itemprop="name" content="Map">
-<meta itemprop="description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke">
+<meta itemprop="description" content="引子 如何去分析HashMap的源码？看了下源码2400行，是不是有点虚？ 我们来看看面向对象三个基本特征：封装、继承、多态 * 封装：封装内部实现">
 
 
 <meta itemprop="datePublished" content="2019-10-19T11:51:45&#43;08:00" />
 <meta itemprop="dateModified" content="2019-10-19T11:51:45&#43;08:00" />
-<meta itemprop="wordCount" content="1180">
+<meta itemprop="wordCount" content="1808">
 
 
 
 <meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Map"/>
-<meta name="twitter:description" content="定义 从Map.java的注释中，看出java对Map的定义： Map是用来存放键值对的（key-value），不能包含重复的key，每一个ke"/>
+<meta name="twitter:description" content="引子 如何去分析HashMap的源码？看了下源码2400行，是不是有点虚？ 我们来看看面向对象三个基本特征：封装、继承、多态 * 封装：封装内部实现"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -134,10 +134,24 @@
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
 <ul>
+<li><a href="#引子">引子</a></li>
 <li><a href="#定义">定义</a></li>
-<li><a href="#源码分析">源码分析</a>
+<li><a href="#开始分析">开始分析</a>
 <ul>
-<li><a href="#整体结构分析">整体结构分析</a></li>
+<li><a href="#map">Map</a>
+<ul>
+<li><a href="#源码框架">源码框架</a></li>
+</ul></li>
+<li><a href="#abstractmap">AbstractMap</a>
+<ul>
+<li><a href="#源码框架-1">源码框架</a></li>
+</ul></li>
+<li><a href="#hashmap">HashMap</a>
+<ul>
+<li><a href="#对齐名词和概念">对齐名词和概念：</a></li>
+<li><a href="#源码框架-2">源码框架</a></li>
+<li><a href="#源码分析">源码分析</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </nav>
@@ -145,6 +159,17 @@
 </div>
     <div class="post-content">
       
+
+<h1 id="引子">引子</h1>
+
+<p>如何去分析<code>HashMap</code>的源码？看了下源码<code>2400</code>行，是不是有点虚？</p>
+
+<p>我们来看看面向对象三个基本特征：封装、继承、多态
+ * 封装：封装内部实现，屏蔽细节
+ * 继承：继承父类的能力
+ * 多态：对外统一暴露出基类</p>
+
+<p>所以我们看源码的切入点不应该是从<code>HashMap</code>开始，而是应该看看<code>Map</code>这个顶级接口到底定义了哪些东西，有一个整体脉络，然后再深入<code>HashMap</code>的细节，抓住每关键的点，各个击破。</p>
 
 <h1 id="定义">定义</h1>
 
@@ -167,13 +192,15 @@
 </ul></li>
 </ul>
 
-<h1 id="源码分析">源码分析</h1>
+<h1 id="开始分析">开始分析</h1>
 
-<h2 id="整体结构分析">整体结构分析</h2>
+<p>这里只涉及到有哪些方法，不涉及到方法具体细节</p>
 
-<p>这里只涉及到有哪些方法，不涉及到方法具体细节，同时省略一些无关紧要的工具方法</p>
+<p>且省略一些无关紧要的工具方法：工具方法就像工具人一样，很好用，但是无关紧要</p>
 
-<p>工具方法就像工具人一样，很好用，但是无关紧要</p>
+<h2 id="map">Map</h2>
+
+<h3 id="源码框架">源码框架</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
@@ -212,6 +239,7 @@
 </span><span class="lnt">34
 </span><span class="lnt">35
 </span><span class="lnt">36
+</span><span class="lnt">37
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">interface</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="p">{</span>
@@ -225,6 +253,7 @@
 <span class="c1">// Modification Operations
 </span><span class="c1"></span><span class="n">V</span> <span class="nf">put</span><span class="p">(</span><span class="n">K</span> <span class="nf">key</span><span class="p">,</span> <span class="n">V</span> <span class="nf">value</span><span class="p">);</span>
 <span class="n">V</span> <span class="nf">remove</span><span class="p">(</span><span class="n">Object</span> <span class="nf">key</span><span class="p">);</span>
+
 <span class="c1">// Bulk Operations
 </span><span class="c1"></span><span class="kt">void</span> <span class="nf">putAll</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nf">K</span><span class="p">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="nf">V</span><span class="o">&gt;</span> <span class="n">m</span><span class="p">);</span>
 <span class="kt">void</span> <span class="nf">clear</span><span class="p">();</span>
@@ -251,7 +280,11 @@
   <span class="c1">//工具方法省略...
 </span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
-</div><div class="highlight"><div class="chroma">
+</div>
+<h2 id="abstractmap">AbstractMap</h2>
+
+<h3 id="源码框架-1">源码框架</h3>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -313,7 +346,7 @@
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">void</span> <span class="n">clear</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  
   <span class="c1">// Views
-</span><span class="c1"></span>  <span class="kd">transient</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span>        <span class="nf">keySet</span><span class="p">;</span>
+</span><span class="c1"></span>  <span class="kd">transient</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="nf">keySet</span><span class="p">;</span>
   <span class="kd">transient</span> <span class="nf">Collection</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">values</span><span class="p">;</span>
   <span class="kd">public</span> <span class="nf">Set</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;</span> <span class="nf">keySet</span><span class="p">()</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span>  <span class="kd">public</span> <span class="nf">Collection</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">values</span><span class="p">()</span> <span class="p">{...</span><span class="c1">//}
@@ -334,7 +367,33 @@
   <span class="kd">public</span> <span class="nf">static</span> <span class="kd">class</span> <span class="nf">SimpleImmutableEntry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span> <span class="nf">implements</span> <span class="n">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span><span class="n">java</span><span class="p">.</span><span class="na">io</span><span class="p">.</span><span class="na">Serializable</span> <span class="p">{</span><span class="c1">//...}
 </span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
-</div><div class="highlight"><div class="chroma">
+</div>
+<h2 id="hashmap">HashMap</h2>
+
+<h3 id="对齐名词和概念">对齐名词和概念：</h3>
+
+<p><code>HashMap</code>：从名字可以看出，他是基于<code>散列表</code>的一个<code>Map</code></p>
+
+<p>关于散列表这种数据结构的解释可以看这篇文章：<a href="https://zh.wikipedia.org/wiki/散列表">wikipedia</a>
+&gt; hash table or hash map is a data structure that uses a hash function to map identifying values, known as keys (e.g., a person&rsquo;s name), to their associated values (e.g., their telephone number). Thus, a hash table implements an associative array. The hash function is used to transform the key into the index (the hash) of an array element (the slot or bucket) where the corresponding value is to be sought.</p>
+
+<p>读完这篇文章和上面的英文解释，你应该大致了解了一些名词：
++ 散列表，又叫哈希表
++ 散列函数，又叫哈希函数
++ 散列冲突，又叫哈希冲突
++ 负载因子，又叫装载因子</p>
+
+<p>同时解释下我们日常说的哈希桶是什么：</p>
+
+<p>散列表这个数据结构里存放记录的数组称做散列表，记录里面的元素可以是<code>slot</code>（位置，单个），或者是 <code>bucket</code>（桶，多个），所以哈希桶其实不是跟散列表等价的，他是散列表里元素的承载方式
+&gt; HashMap类的注释里，又出现了一个叫 bin（箱子） 的东西，跟 bucket（桶）等价</p>
+
+<p>为了统一名词，下文将会使用的名词：<strong>散列表、散列函数、负载因子、桶</strong></p>
+
+<h3 id="源码框架-2">源码框架</h3>
+
+<p>下面的源码我<code>format</code>了一下，跟上面的层次对齐，方便分析</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">  1
 </span><span class="lnt">  2
@@ -548,6 +607,8 @@
 </span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
+<h3 id="源码分析">源码分析</h3>
+
     </div>
 
     <div class="post-copyright">
